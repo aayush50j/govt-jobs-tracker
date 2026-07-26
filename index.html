@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>सरकारी नौकरी अलर्ट — Govt Job Tracker (Live)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tiro+Devanagari+Hindi&family=Spectral:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#f5eedd; --paper-dark:#ece2c9; --ink:#1b2a4a; --ink-soft:#4a4238;
+    --maroon:#9c2338; --saffron:#dc8b28; --green:#1f6e43; --line:#c9bd9e; --card:#fffdf7;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);color:var(--ink-soft);font-family:'Inter',sans-serif;min-height:100vh;}
+  header{border-bottom:3px double var(--ink);padding:28px 24px 18px;text-align:center;background:linear-gradient(180deg,var(--paper-dark),transparent);}
+  .tricolor{height:4px;width:120px;margin:0 auto 14px;background:linear-gradient(90deg,var(--saffron) 0 33%,#fff 33% 66%,var(--green) 66% 100%);border:1px solid var(--line);}
+  header h1{font-family:'Tiro Devanagari Hindi',serif;font-size:2.1rem;color:var(--maroon);margin:0 0 4px;}
+  header .sub{font-family:'Spectral',serif;font-size:1rem;color:var(--ink);letter-spacing:1.5px;text-transform:uppercase;}
+  header .meta{margin-top:10px;font-size:0.8rem;color:var(--ink-soft);opacity:0.8;}
+  header .meta b{color:var(--green);}
+  .section-wrap{max-width:1080px;margin:0 auto;padding:0 20px;}
+  .section-head{display:flex;align-items:baseline;gap:10px;margin:40px 0 14px;padding-bottom:8px;border-bottom:2px solid var(--ink);}
+  .section-head h2{font-family:'Spectral',serif;font-size:1.35rem;color:var(--ink);margin:0;}
+  .section-head .count{font-family:'IBM Plex Mono',monospace;font-size:0.78rem;color:var(--maroon);background:var(--card);border:1px solid var(--line);border-radius:20px;padding:2px 10px;}
+  .section-note{font-size:0.78rem;color:var(--ink-soft);opacity:0.75;margin:-8px 0 4px;}
+  .controls{max-width:1080px;margin:22px auto 0;padding:0 20px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:center;}
+  #search{flex:1 1 260px;max-width:360px;padding:10px 14px;border:1.5px solid var(--ink);background:var(--card);font-size:0.92rem;color:var(--ink);border-radius:2px;}
+  #search:focus{outline:2px solid var(--saffron);outline-offset:1px;}
+  .chip{padding:7px 14px;border:1.5px solid var(--ink);background:transparent;color:var(--ink);font-size:0.82rem;font-weight:600;border-radius:20px;cursor:pointer;}
+  .chip.active,.chip:hover{background:var(--ink);color:var(--paper);}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px;margin-bottom:8px;}
+  .card{position:relative;background:var(--card);border:1px solid var(--line);box-shadow:2px 3px 0 rgba(27,42,74,0.08);padding:20px 18px 62px;display:flex;flex-direction:column;gap:8px;min-height:185px;}
+  .card .cat{font-size:0.68rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--green);}
+  .card h3{font-family:'Spectral',serif;font-size:1.08rem;line-height:1.35;color:var(--ink);margin:2px 0 2px;font-weight:600;}
+  .card .posts{font-size:0.82rem;color:var(--ink-soft);}
+  .card .qual{font-size:0.74rem;color:var(--ink-soft);background:var(--paper-dark);display:inline-block;padding:2px 8px;border-radius:3px;width:fit-content;}
+  .stamp-row{margin-top:auto;display:flex;align-items:center;justify-content:space-between;gap:10px;padding-top:10px;border-top:1px dashed var(--line);}
+  .lastdate{font-size:0.72rem;color:var(--ink-soft);}
+  .lastdate b{display:block;color:var(--maroon);font-family:'IBM Plex Mono',monospace;font-size:0.85rem;font-weight:600;}
+  .countdown{font-family:'IBM Plex Mono',monospace;font-size:0.78rem;font-weight:600;color:#fff;background:var(--maroon);border:1px solid var(--ink);border-radius:3px;padding:5px 9px;transform:rotate(-2deg);white-space:nowrap;}
+  .countdown.urgent{background:#c0392b;animation:pulse 1.4s infinite;}
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.7;}}
+  .card a.applybtn{position:absolute;right:18px;bottom:16px;font-size:0.72rem;font-weight:700;color:var(--ink);text-decoration:none;border-bottom:1.5px solid var(--saffron);padding-bottom:1px;}
+  .card .source{position:absolute;left:18px;bottom:17px;font-size:0.68rem;color:var(--ink-soft);opacity:0.7;font-style:italic;}
+  .card:hover{box-shadow:3px 5px 0 rgba(27,42,74,0.14);transform:translateY(-1px);}
+  footer{text-align:center;padding:24px 20px 40px;font-size:0.78rem;color:var(--ink-soft);border-top:1px solid var(--line);max-width:760px;margin:40px auto 0;line-height:1.6;}
+  footer b{color:var(--maroon);}
+  .empty{text-align:center;grid-column:1/-1;padding:30px 0;color:var(--ink-soft);font-family:'Spectral',serif;font-size:1rem;}
+  .status{text-align:center;padding:60px 20px;font-family:'Spectral',serif;color:var(--ink-soft);}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="tricolor"></div>
+  <h1>सरकारी नौकरी अलर्ट</h1>
+  <div class="sub">Govt Job Notice Board — Live</div>
+  <div class="meta" id="snapshotNote">Loading latest data…</div>
+</header>
+
+<div id="statusArea"></div>
+
+<div class="section-wrap" id="mainContent" style="display:none;">
+  <div class="section-head"><h2>🆕 Latest Jobs — Pichle 1 Mahine Ki</h2><span class="count" id="cnt-latest">0</span></div>
+  <div class="section-note">Jo bhi jobs pichle 30 dino me pehli baar dekhi gayi hain</div>
+  <div class="grid" id="grid-latest"></div>
+
+  <div class="section-head"><h2>📍 Madhya Pradesh State Jobs</h2><span class="count" id="cnt-mp">0</span></div>
+  <div class="section-note">Sirf MP state ki bharti</div>
+  <div class="grid" id="grid-mp"></div>
+
+  <div class="section-head"><h2>🎓 Graduate (Any Stream) Jobs</h2><span class="count" id="cnt-grad">0</span></div>
+  <div class="section-note">Jinme sirf normal graduation manga gaya hai</div>
+  <div class="grid" id="grid-grad"></div>
+
+  <div class="section-head"><h2>📋 All Active Jobs</h2><span class="count" id="cnt-all">0</span></div>
+</div>
+
+<div class="controls" id="controlsArea" style="display:none;">
+  <input id="search" type="text" placeholder="Post ya department khoje… (e.g. Railway, Bank, SSC, MP)">
+</div>
+<div class="controls" id="chipRow"></div>
+
+<div class="section-wrap">
+  <div class="grid" id="grid-all"></div>
+</div>
+
+<footer>
+  Ye data <b>GitHub Actions</b> ke zariye roz automatically SarkariResult / FreeJobAlert se scrape hokar
+  <code>jobs.json</code> me update hota hai — page khud is file ko fetch karta hai, isliye
+  <b>2 mahine baad bhi kisi bhi laptop pe khologe to us din ka latest data dikhega.</b>
+  Har card seedhe original source page par le jaata hai — form wahin bharna hai.
+</footer>
+
+<script>
+let jobs = [];
+let activeCategory = "All";
+let searchTerm = "";
+let generatedAt = null;
+
+function daysLeftLabel(diffMs){
+  if(diffMs <= 0) return null;
+  const s = Math.floor(diffMs/1000);
+  const d = Math.floor(s/86400);
+  const h = Math.floor((s%86400)/3600);
+  const m = Math.floor((s%3600)/60);
+  const sec = s%60;
+  return {d,h,m,sec};
+}
+
+function cardHTML(j){
+  const dispDate = new Date(j.lastDate+"T23:59:59").toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
+  return `
+    <div class="card">
+      <div class="cat">${j.category} · ${j.state}</div>
+      <h3>${j.title}</h3>
+      <div class="posts">${j.posts}</div>
+      <div class="qual">${j.qualification}</div>
+      <div class="stamp-row">
+        <div class="lastdate">Last Date<b>${dispDate}</b></div>
+        <div class="countdown" data-ld="${new Date(j.lastDate+"T23:59:59").getTime()}">--</div>
+      </div>
+      <span class="source">via ${j.source}</span>
+      <a class="applybtn" href="${j.url}" target="_blank" rel="noopener">Apply / View →</a>
+    </div>`;
+}
+
+function renderGrid(elId, list, emptyMsg){
+  const el = document.getElementById(elId);
+  el.innerHTML = list.length ? list.map(cardHTML).join("") : `<div class="empty">${emptyMsg}</div>`;
+}
+
+function renderAll(){
+  const now = new Date();
+  const active = jobs.filter(j => new Date(j.lastDate+"T23:59:59").getTime() > now.getTime())
+                      .sort((a,b) => new Date(a.lastDate) - new Date(b.lastDate));
+
+  const thirtyDaysAgo = new Date(now.getTime() - 30*86400000);
+  const latest = active.filter(j => new Date(j.posted) >= thirtyDaysAgo).sort((a,b) => new Date(b.posted) - new Date(a.posted));
+  renderGrid('grid-latest', latest, 'Is waqt pichle 1 mahine ki koi naye job active nahi hai.');
+  document.getElementById('cnt-latest').textContent = latest.length;
+
+  const mp = active.filter(j => j.state === "Madhya Pradesh");
+  renderGrid('grid-mp', mp, 'Abhi MP state ki koi live listing nahi mili.');
+  document.getElementById('cnt-mp').textContent = mp.length;
+
+  const grad = active.filter(j => j.qualification === "Graduate (Any Stream)");
+  renderGrid('grid-grad', grad, 'Abhi general graduation wali koi live listing nahi mili.');
+  document.getElementById('cnt-grad').textContent = grad.length;
+
+  const term = searchTerm.trim().toLowerCase();
+  const filtered = active.filter(j => {
+    const catOk = activeCategory === "All" || j.category === activeCategory;
+    const searchOk = !term || j.title.toLowerCase().includes(term) || j.category.toLowerCase().includes(term) || j.state.toLowerCase().includes(term);
+    return catOk && searchOk;
+  });
+  renderGrid('grid-all', filtered, 'Koi matching job nahi mili — filter badal kar dekhein.');
+  document.getElementById('cnt-all').textContent = `${active.length} active`;
+}
+
+function tick(){
+  const now = new Date();
+  let anyExpired = false;
+  document.querySelectorAll('.countdown').forEach(el => {
+    const diff = parseInt(el.getAttribute('data-ld'),10) - now.getTime();
+    const t = daysLeftLabel(diff);
+    if(!t){ anyExpired = true; return; }
+    el.textContent = `${t.d}d ${String(t.h).padStart(2,'0')}h ${String(t.m).padStart(2,'0')}m ${String(t.sec).padStart(2,'0')}s`;
+    el.classList.toggle('urgent', t.d < 2);
+  });
+  if(anyExpired) renderAll();
+}
+
+function buildChips(){
+  const cats = ["All", ...new Set(jobs.map(j => j.category))];
+  const row = document.getElementById('chipRow');
+  row.innerHTML = "";
+  cats.forEach(c => {
+    const btn = document.createElement('button');
+    btn.className = 'chip' + (c === activeCategory ? ' active' : '');
+    btn.textContent = c;
+    btn.onclick = () => {
+      activeCategory = c;
+      document.querySelectorAll('.chip').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderAll(); tick();
+    };
+    row.appendChild(btn);
+  });
+}
+
+async function loadData(){
+  try{
+    const res = await fetch('./jobs.json', {cache:'no-store'});
+    if(!res.ok) throw new Error('jobs.json not found');
+    const data = await res.json();
+    jobs = data.jobs || [];
+    generatedAt = data.generatedAt;
+
+    document.getElementById('statusArea').innerHTML = "";
+    document.getElementById('mainContent').style.display = "";
+    document.getElementById('controlsArea').style.display = "";
+
+    const genDate = generatedAt ? new Date(generatedAt).toLocaleString('en-IN', {dateStyle:'medium', timeStyle:'short'}) : "unknown";
+    document.getElementById('snapshotNote').innerHTML = `Last auto-updated: <b>${genDate}</b> · ${jobs.length} jobs tracked`;
+
+    buildChips();
+    renderAll();
+    tick();
+    setInterval(tick, 1000);
+  }catch(err){
+    document.getElementById('statusArea').innerHTML = `
+      <div class="status">
+        ⚠️ jobs.json abhi tak generate nahi hua.<br><br>
+        Agar tumne abhi-abhi GitHub Actions setup kiya hai, to pehli baar workflow
+        chalne me thoda time lagta hai — <b>Actions tab</b> me jaakar "Update Govt Jobs Data"
+        workflow ko manually "Run workflow" se trigger kar sakte ho.
+      </div>`;
+    document.getElementById('snapshotNote').textContent = "Data not available yet";
+  }
+}
+
+loadData();
+</script>
+
+</body>
+</html>
