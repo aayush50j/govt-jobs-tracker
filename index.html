@@ -137,7 +137,9 @@ function renderAll(){
                       .sort((a,b) => new Date(a.lastDate) - new Date(b.lastDate));
 
   const thirtyDaysAgo = new Date(now.getTime() - 30*86400000);
-  const latest = active.filter(j => new Date(j.posted) >= thirtyDaysAgo).sort((a,b) => new Date(b.posted) - new Date(a.posted));
+  // active is already sorted soonest-expiry-first — just filter, don't re-sort,
+  // so "latest" section also shows the nearest deadline at the top.
+  const latest = active.filter(j => new Date(j.posted) >= thirtyDaysAgo);
   renderGrid('grid-latest', latest, 'Is waqt pichle 1 mahine ki koi naye job active nahi hai.');
   document.getElementById('cnt-latest').textContent = latest.length;
 

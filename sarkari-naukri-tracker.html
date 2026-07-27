@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>सरकारी नौकरी अलर्ट — Govt Job Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tiro+Devanagari+Hindi&family=Spectral:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#f5eedd;
+    --paper-dark:#ece2c9;
+    --ink:#1b2a4a;
+    --ink-soft:#4a4238;
+    --maroon:#9c2338;
+    --saffron:#dc8b28;
+    --green:#1f6e43;
+    --line:#c9bd9e;
+    --card:#fffdf7;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(circle at 20% 10%, rgba(0,0,0,0.02), transparent 40%),
+      var(--paper);
+    background-image:
+      repeating-linear-gradient(0deg, rgba(0,0,0,0.015) 0px, transparent 1px, transparent 2px),
+      var(--paper);
+    color:var(--ink-soft);
+    font-family:'Inter', sans-serif;
+    min-height:100vh;
+  }
+  header{
+    border-bottom:3px double var(--ink);
+    padding:28px 24px 18px;
+    text-align:center;
+    background:linear-gradient(180deg, var(--paper-dark), transparent);
+  }
+  .tricolor{
+    height:4px;
+    width:120px;
+    margin:0 auto 14px;
+    background:linear-gradient(90deg, var(--saffron) 0 33%, #fff 33% 66%, var(--green) 66% 100%);
+    border:1px solid var(--line);
+  }
+  header h1{
+    font-family:'Tiro Devanagari Hindi', serif;
+    font-size:2.1rem;
+    color:var(--maroon);
+    margin:0 0 4px;
+    letter-spacing:0.5px;
+  }
+  header .sub{
+    font-family:'Spectral', serif;
+    font-size:1rem;
+    color:var(--ink);
+    letter-spacing:1.5px;
+    text-transform:uppercase;
+  }
+  header .meta{
+    margin-top:10px;
+    font-size:0.8rem;
+    color:var(--ink-soft);
+    opacity:0.75;
+  }
+  .section-wrap{
+    max-width:1080px;
+    margin:0 auto;
+    padding:0 20px;
+  }
+  .section-head{
+    display:flex;
+    align-items:baseline;
+    gap:10px;
+    margin:40px 0 14px;
+    padding-bottom:8px;
+    border-bottom:2px solid var(--ink);
+  }
+  .section-head h2{
+    font-family:'Spectral', serif;
+    font-size:1.35rem;
+    color:var(--ink);
+    margin:0;
+  }
+  .section-head .count{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.78rem;
+    color:var(--maroon);
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:20px;
+    padding:2px 10px;
+  }
+  .section-note{
+    font-size:0.78rem;
+    color:var(--ink-soft);
+    opacity:0.75;
+    margin:-8px 0 4px;
+  }
+  .controls{
+    max-width:1080px;
+    margin:22px auto 0;
+    padding:0 20px;
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    align-items:center;
+    justify-content:center;
+  }
+  #search{
+    flex:1 1 260px;
+    max-width:360px;
+    padding:10px 14px;
+    border:1.5px solid var(--ink);
+    background:var(--card);
+    font-family:'Inter';
+    font-size:0.92rem;
+    color:var(--ink);
+    border-radius:2px;
+  }
+  #search:focus{outline:2px solid var(--saffron); outline-offset:1px;}
+  .chip{
+    padding:7px 14px;
+    border:1.5px solid var(--ink);
+    background:transparent;
+    color:var(--ink);
+    font-family:'Inter';
+    font-size:0.82rem;
+    font-weight:600;
+    border-radius:20px;
+    cursor:pointer;
+    transition:all .15s ease;
+  }
+  .chip.active, .chip:hover{
+    background:var(--ink);
+    color:var(--paper);
+  }
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(300px,1fr));
+    gap:18px;
+    margin-bottom:8px;
+  }
+  .card{
+    position:relative;
+    background:var(--card);
+    border:1px solid var(--line);
+    box-shadow:2px 3px 0 rgba(27,42,74,0.08);
+    padding:20px 18px 62px;
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    min-height:185px;
+  }
+  .card .cat{
+    font-size:0.68rem;
+    font-weight:700;
+    letter-spacing:1px;
+    text-transform:uppercase;
+    color:var(--green);
+  }
+  .card h3{
+    font-family:'Spectral', serif;
+    font-size:1.08rem;
+    line-height:1.35;
+    color:var(--ink);
+    margin:2px 0 2px;
+    font-weight:600;
+  }
+  .card .posts{
+    font-size:0.82rem;
+    color:var(--ink-soft);
+  }
+  .card .qual{
+    font-size:0.74rem;
+    color:var(--ink-soft);
+    background:var(--paper-dark);
+    display:inline-block;
+    padding:2px 8px;
+    border-radius:3px;
+    width:fit-content;
+  }
+  .stamp-row{
+    margin-top:auto;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    padding-top:10px;
+    border-top:1px dashed var(--line);
+  }
+  .lastdate{
+    font-size:0.72rem;
+    color:var(--ink-soft);
+  }
+  .lastdate b{
+    display:block;
+    color:var(--maroon);
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.85rem;
+    font-weight:600;
+  }
+  .countdown{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:0.78rem;
+    font-weight:600;
+    color:#fff;
+    background:var(--maroon);
+    border:1px solid var(--ink);
+    border-radius:3px;
+    padding:5px 9px;
+    transform:rotate(-2deg);
+    white-space:nowrap;
+  }
+  .countdown.urgent{background:#c0392b; animation:pulse 1.4s infinite;}
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.7;}}
+  .card a.applybtn{
+    position:absolute;
+    right:18px;
+    bottom:16px;
+    font-size:0.72rem;
+    font-weight:700;
+    color:var(--ink);
+    text-decoration:none;
+    border-bottom:1.5px solid var(--saffron);
+    padding-bottom:1px;
+  }
+  .card .source{
+    position:absolute;
+    left:18px;
+    bottom:17px;
+    font-size:0.68rem;
+    color:var(--ink-soft);
+    opacity:0.7;
+    font-style:italic;
+  }
+  .card:hover{box-shadow:3px 5px 0 rgba(27,42,74,0.14); transform:translateY(-1px);}
+  footer{
+    text-align:center;
+    padding:24px 20px 40px;
+    font-size:0.78rem;
+    color:var(--ink-soft);
+    border-top:1px solid var(--line);
+    max-width:760px;
+    margin:40px auto 0;
+    line-height:1.6;
+  }
+  footer b{color:var(--maroon);}
+  .empty{
+    text-align:center;
+    grid-column:1/-1;
+    padding:30px 0;
+    color:var(--ink-soft);
+    font-family:'Spectral', serif;
+    font-size:1rem;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="tricolor"></div>
+  <h1>सरकारी नौकरी अलर्ट</h1>
+  <div class="sub">Govt Job Notice Board</div>
+  <div class="meta" id="snapshotNote">Snapshot: 26 July 2026 · SarkariResult + FreeJobAlert style listings</div>
+</header>
+
+<div class="section-wrap">
+
+  <div class="section-head"><h2>🆕 Latest Jobs — Pichle 1 Mahine Ki</h2><span class="count" id="cnt-latest">0</span></div>
+  <div class="section-note">Jo bhi jobs pichle 30 dino me notify/open hui hain</div>
+  <div class="grid" id="grid-latest"></div>
+
+  <div class="section-head"><h2>📍 Madhya Pradesh State Jobs</h2><span class="count" id="cnt-mp">0</span></div>
+  <div class="section-note">Sirf MP state ki bharti — abhi live listings kam hain, lekin agli baar search karwa ke aur add karwa sakte ho</div>
+  <div class="grid" id="grid-mp"></div>
+
+  <div class="section-head"><h2>🎓 Graduate (Any Stream) Jobs</h2><span class="count" id="cnt-grad">0</span></div>
+  <div class="section-note">Jinme sirf normal graduation manga gaya hai, koi specific degree/technical qualification nahi</div>
+  <div class="grid" id="grid-grad"></div>
+
+  <div class="section-head"><h2>📋 All Active Jobs</h2><span class="count" id="cnt-all">0</span></div>
+</div>
+
+<div class="controls">
+  <input id="search" type="text" placeholder="Post ya department khoje… (e.g. Railway, Bank, SSC, MP)">
+</div>
+<div class="controls" id="chipRow"></div>
+
+<div class="section-wrap">
+  <div class="grid" id="grid-all"></div>
+</div>
+
+<footer>
+  Data snapshot manually refreshed by pulling listings from <b>SarkariResult</b> and <b>FreeJobAlert</b> style aggregators.
+  Har card seedhe source website ke asli job page par le jaata hai — form wahin bharna hai.
+  Jaise hi last date nikal jaati hai, wo job saari sections se apne aap hat jaati hai.
+  <br><br>
+  <b>Note:</b> ek browser page khud-ba-khud roz naye internet pe jaakar search nahi kar sakta (cross-site security restriction),
+  aur "posted/notified date" har jगह official taur par publish nahi hoti isliye latest-1-month section approximate hai.
+  Fresh update ke liye is chat me bol dena — main turant naya snapshot bana dunga.
+</footer>
+
+<script>
+const TODAY = new Date("2026-07-26T00:00:00");
+
+// job data
+const jobs = [
+  {title:"IBPS PO/MT XVI Online Form 2026", posts:"7365 Posts", category:"Bank", state:"All India / Central", qualification:"Graduate (Any Stream)", lastDate:"2026-07-26", posted:"2026-06-28", url:"https://sarkariresult.com.cm/ibps-po-mt-xvi-2026/", source:"SarkariResult"},
+  {title:"IBPS SO XVI Online Form 2026", posts:"1035 Posts", category:"Bank", state:"All India / Central", qualification:"Graduate + Professional Degree", lastDate:"2026-07-26", posted:"2026-06-28", url:"https://sarkariresult.com.cm/ibps-so-xvi-2026/", source:"SarkariResult"},
+  {title:"Indian Air Force Agniveer Vayu Intake 02/2027", posts:"Various Posts", category:"Defence", state:"All India / Central", qualification:"12th Pass (Science)", lastDate:"2026-07-26", posted:"2026-06-25", url:"https://sarkariresult.com.cm/indian-airforce-agniveer-vayu-intake-02-2027/", source:"SarkariResult"},
+  {title:"IDBI Bank Specialist Officer (SO) 2026", posts:"Various Posts", category:"Bank", state:"All India / Central", qualification:"Graduate + Professional Degree", lastDate:"2026-07-26", posted:"2026-06-30", url:"https://sarkariresult.com.cm/idbi-bank-so-2026/", source:"SarkariResult"},
+  {title:"UPPSC Pre Online Form 2026", posts:"500 Posts", category:"State PSC", state:"Uttar Pradesh", qualification:"Graduate (Any Stream)", lastDate:"2026-07-27", posted:"2026-07-01", url:"https://sarkariresult.com.cm/uppsc-pre-2026/", source:"SarkariResult"},
+  {title:"Indian Overseas Bank (IOB) Apprentice 2026", posts:"Various Posts", category:"Bank", state:"All India / Central", qualification:"Graduate (Any Stream)", lastDate:"2026-07-27", posted:"2026-07-02", url:"https://sarkariresult.com.cm/iob-apprentice-2026/", source:"SarkariResult"},
+  {title:"Railway RRB Technician Online Form 2026", posts:"6557 Posts", category:"Railway", state:"All India / Central", qualification:"ITI / Diploma (Technical)", lastDate:"2026-07-29", posted:"2026-07-01", url:"https://sarkariresult.com.cm/rrb-technician-2026/", source:"SarkariResult"},
+  {title:"Patna High Court District Judge 2026 (Re-Open)", posts:"Various Posts", category:"Judiciary", state:"Bihar", qualification:"LLB + Judicial Experience", lastDate:"2026-07-28", posted:"2026-07-10", url:"https://sarkariresult.com.cm/patna-high-court-district-judge-2026/", source:"SarkariResult"},
+  {title:"UPSSSC Cane Supervisor Online Form 2026", posts:"Various Posts", category:"State PSC", state:"Uttar Pradesh", qualification:"Graduate (Agriculture)", lastDate:"2026-07-28", posted:"2026-07-05", url:"https://sarkariresult.com.cm/upsssc-cane-supervisor-2026/", source:"SarkariResult"},
+  {title:"BPSSC Bihar Home Guard Company Commander 2026", posts:"Various Posts", category:"Police", state:"Bihar", qualification:"Graduate (Any Stream)", lastDate:"2026-07-30", posted:"2026-07-05", url:"https://sarkariresult.com.cm/bihar-police-home-guard-company-commander-2026/", source:"SarkariResult"},
+  {title:"ONGC Geologists and Engineers E1 2026", posts:"Various Posts", category:"PSU", state:"All India / Central", qualification:"Engineering / Geology (Specialized)", lastDate:"2026-07-31", posted:"2026-07-01", url:"https://sarkariresult.com.cm/ongc-geologists-and-engineers-e1-2026/", source:"SarkariResult"},
+  {title:"NBEMS Group A, B & C Various Post 2026", posts:"Various Posts", category:"Medical", state:"All India / Central", qualification:"Varies by Post", lastDate:"2026-07-31", posted:"2026-07-05", url:"https://sarkariresult.com.cm/nbems-various-post-2026/", source:"SarkariResult"},
+  {title:"MPPSC Assistant Town Planner Online Form 2026", posts:"39 Posts", category:"State PSC", state:"Madhya Pradesh", qualification:"Town Planning Degree (Specialized)", lastDate:"2026-07-31", posted:"2026-07-01", url:"https://sarkariresult.com.cm/mppsc-assistant-town-planner-2026/", source:"SarkariResult"},
+  {title:"Indian Air Force Agniveer Musician Intake 01/2027", posts:"Various Posts", category:"Defence", state:"All India / Central", qualification:"10th/12th Pass + Music", lastDate:"2026-08-02", posted:"2026-07-08", url:"https://sarkariresult.com.cm/indian-airforce-musician-intake-01-2027/", source:"SarkariResult"},
+  {title:"RSSB CET Graduate Level Online Form 2026", posts:"Various Posts", category:"State PSC", state:"Rajasthan", qualification:"Graduate (Any Stream)", lastDate:"2026-08-02", posted:"2026-07-05", url:"https://sarkariresult.com.cm/rssb-cet-graduate-level-2026/", source:"SarkariResult"},
+  {title:"Indian Navy SSC Officer June 2027 (Date Extend)", posts:"Various Posts", category:"Defence", state:"All India / Central", qualification:"Engineering / Professional Degree", lastDate:"2026-08-03", posted:"2026-06-22", url:"https://sarkariresult.com.cm/indian-navy-ssc-officer-june-2027/", source:"SarkariResult"},
+  {title:"UPSSSC Auditor / Assistant Accountant 2026", posts:"1937 Posts", category:"State PSC", state:"Uttar Pradesh", qualification:"Graduate (Commerce/B.Com)", lastDate:"2026-08-03", posted:"2026-07-10", url:"https://sarkariresult.com.cm/upsssc-auditor-assistant-accountant-2026/", source:"SarkariResult"},
+  {title:"Uttarakhand TET (UTET) Online Form 2026", posts:"Teaching", category:"Teaching", state:"Uttarakhand", qualification:"Graduate + B.Ed (Teaching)", lastDate:"2026-08-03", posted:"2026-07-08", url:"https://sarkariresult.com.cm/utet-2026/", source:"SarkariResult"},
+  {title:"DHSGSU Sagar Junior Research Fellow (JRF) 2026", posts:"1 Post", category:"Research", state:"Madhya Pradesh", qualification:"M.Sc (Postgraduate/Specialized)", lastDate:"2026-08-04", posted:"2026-07-22", url:"https://www.freejobalert.com/articles/dgsgsu-junior-research-fellow-recruitment-2026-apply-online-3059791", source:"FreeJobAlert"},
+  {title:"UPSRTC Bus Conductor Online Form 2026", posts:"Various Posts", category:"State PSC", state:"Uttar Pradesh", qualification:"12th Pass", lastDate:"2026-08-05", posted:"2026-07-10", url:"https://sarkariresult.com.cm/upsrtc-bus-conductor-form-2026/", source:"SarkariResult"},
+  {title:"Indian Army SSC Technical 68th (Women) April 2027", posts:"Various Posts", category:"Defence", state:"All India / Central", qualification:"Engineering Degree (Specialized)", lastDate:"2026-08-06", posted:"2026-07-05", url:"https://sarkariresult.com.cm/indian-army-ssc-technical-68th-2026/", source:"SarkariResult"},
+  {title:"Indian Army SSC Technical 68th (Men) April 2027", posts:"Various Posts", category:"Defence", state:"All India / Central", qualification:"Engineering Degree (Specialized)", lastDate:"2026-08-07", posted:"2026-07-06", url:"https://sarkariresult.com.cm/indian-army-ssc-technical-68th-men-2026/", source:"SarkariResult"},
+  {title:"RRC NCR Prayagraj Apprentice Online Form 2026", posts:"Various Posts", category:"Railway", state:"Uttar Pradesh", qualification:"ITI / 10th Pass", lastDate:"2026-08-07", posted:"2026-07-10", url:"https://sarkariresult.com.cm/rrc-apprentice-2026/", source:"SarkariResult"},
+  {title:"National Insurance (NICL) Assistant 2026", posts:"Various Posts", category:"Insurance", state:"All India / Central", qualification:"Graduate (Any Stream)", lastDate:"2026-08-07", posted:"2026-07-05", url:"https://sarkariresult.com.cm/nicl-assistant-2026/", source:"SarkariResult"},
+  {title:"BPSSC Bihar Police Sub Inspector (SI) 2026", posts:"Various Posts", category:"Police", state:"Bihar", qualification:"Graduate (Any Stream)", lastDate:"2026-08-09", posted:"2026-07-08", url:"https://sarkariresult.com.cm/bihar-police-si-2026/", source:"SarkariResult"},
+  {title:"PNB Bank LBO Online Form 2026", posts:"Various Posts", category:"Bank", state:"All India / Central", qualification:"Graduate + Agri/Law/Finance", lastDate:"2026-08-09", posted:"2026-07-12", url:"https://sarkariresult.com.cm/pnb-bank-lbo-2026/", source:"SarkariResult"},
+  {title:"Rajasthan High Court Stenographer 2026", posts:"Various Posts", category:"Judiciary", state:"Rajasthan", qualification:"12th Pass + Shorthand", lastDate:"2026-08-10", posted:"2026-07-10", url:"https://sarkariresult.com.cm/rajasthan-high-court-stenographer-2026/", source:"SarkariResult"},
+  {title:"WCL Mining Sirdar & Assistant Foreman 2026", posts:"Various Posts", category:"PSU", state:"Maharashtra", qualification:"Diploma / ITI (Mining)", lastDate:"2026-08-10", posted:"2026-07-08", url:"https://sarkariresult.com.cm/wcl-mining-sirdar-assistant-foreman-2026/", source:"SarkariResult"},
+  {title:"Union Bank Specialist Officer (SO) 2026", posts:"Various Posts", category:"Bank", state:"All India / Central", qualification:"Graduate + Professional Degree", lastDate:"2026-08-10", posted:"2026-07-12", url:"https://sarkariresult.com.cm/union-bank-so-2026/", source:"SarkariResult"},
+  {title:"Railway RRB Section Controller Online Form 2026", posts:"Various Posts", category:"Railway", state:"All India / Central", qualification:"Graduate / Engineering", lastDate:"2026-08-14", posted:"2026-07-12", url:"https://sarkariresult.com.cm/rrb-section-controller-03-2026/", source:"SarkariResult"},
+  {title:"UPSC Principal, Vice Principal Online Form 2026", posts:"Various Posts", category:"Teaching", state:"All India / Central", qualification:"Postgraduate + Teaching Experience", lastDate:"2026-08-14", posted:"2026-07-10", url:"https://sarkariresult.com.cm/upsc-principal-2026/", source:"SarkariResult"},
+  {title:"AIIMS NORCET 11th Nursing Officer 2026", posts:"Nursing", category:"Medical", state:"All India / Central", qualification:"B.Sc Nursing (Specialized)", lastDate:"2026-08-13", posted:"2026-07-10", url:"https://sarkariresult.com.cm/aiims-norcet-11th-nursing-officer-2026/", source:"SarkariResult"},
+  {title:"UKSSSC Assistant Accountant Online Form 2026", posts:"Various Posts", category:"State PSC", state:"Uttarakhand", qualification:"Graduate (Commerce)", lastDate:"2026-08-15", posted:"2026-07-14", url:"https://sarkariresult.com.cm/uksssc-assistant-accountant-2026/", source:"SarkariResult"},
+  {title:"ISRO Assistant & Junior Personal Assistant 2026", posts:"Various Posts", category:"PSU", state:"All India / Central", qualification:"Graduate (Any Stream)", lastDate:"2026-08-16", posted:"2026-07-15", url:"https://sarkariresult.com.cm/isro-assistant-2026/", source:"SarkariResult"},
+  {title:"BPSSC Bihar Forest Range Officer 2026 (Start)", posts:"Various Posts", category:"Forest", state:"Bihar", qualification:"Graduate (Science - Specialized)", lastDate:"2026-08-16", posted:"2026-07-10", url:"https://sarkariresult.com.cm/bpssc-bihar-forest-range-officer-2026/", source:"SarkariResult"},
+  {title:"UPSSSC Forensic Science Laboratory 2026", posts:"Various Posts", category:"State PSC", state:"Uttar Pradesh", qualification:"Science Graduate (Forensic - Specialized)", lastDate:"2026-08-17", posted:"2026-07-15", url:"https://sarkariresult.com.cm/upsssc-fsl-2026/", source:"SarkariResult"},
+  {title:"Indian Army JAG 125th Course April 2027", posts:"Various Posts", category:"Defence", state:"All India / Central", qualification:"LLB (Specialized)", lastDate:"2026-08-17", posted:"2026-07-10", url:"https://sarkariresult.com.cm/indian-army-jag-125th-course-2027/", source:"SarkariResult"},
+  {title:"Railway NFR Apprentice Online Form 2026", posts:"6777 Posts", category:"Railway", state:"North East India", qualification:"ITI / 10th Pass", lastDate:"2026-08-19", posted:"2026-07-15", url:"https://sarkariresult.com.cm/railway-nfr-2026/", source:"SarkariResult"},
+  {title:"IGCAR Trade Apprentice Online Form 2026", posts:"Various Posts", category:"PSU", state:"Tamil Nadu", qualification:"ITI (Technical)", lastDate:"2026-08-19", posted:"2026-07-15", url:"https://sarkariresult.com.cm/igcar-apprentice-2026/", source:"SarkariResult"},
+  {title:"UP Anganwadi Bharti Online Form 2026 (Updated)", posts:"Various Posts", category:"State PSC", state:"Uttar Pradesh", qualification:"12th Pass", lastDate:"2026-08-20", posted:"2026-06-10", url:"https://sarkariresult.com.cm/up-anganwadi-bharti-2026/", source:"SarkariResult"},
+  {title:"UPESSC Principal Online Form 2026", posts:"Various Posts", category:"Teaching", state:"Uttar Pradesh", qualification:"Postgraduate (Specialized)", lastDate:"2026-08-20", posted:"2026-07-15", url:"https://sarkariresult.com.cm/upessc-principal-2026/", source:"SarkariResult"},
+  {title:"RPSC Physiotherapist Online Form 2026", posts:"Various Posts", category:"Medical", state:"Rajasthan", qualification:"BPT / Physiotherapy (Specialized)", lastDate:"2026-08-21", posted:"2026-07-18", url:"https://sarkariresult.com.cm/rpsc-physiotherapist-2026/", source:"SarkariResult"},
+  {title:"Indian Army NCC 125th Course April 2027", posts:"Various Posts", category:"Defence", state:"All India / Central", qualification:"Graduate (Any Stream)", lastDate:"2026-08-21", posted:"2026-07-12", url:"https://sarkariresult.com.cm/indian-army-ncc-125th-course-april-2027/", source:"SarkariResult"},
+  {title:"JSSC Para Teacher (JTAACCE) Online Form 2026", posts:"7299 Posts", category:"Teaching", state:"Jharkhand", qualification:"Graduate + B.Ed/D.El.Ed (Specialized)", lastDate:"2026-08-30", posted:"2026-06-15", url:"https://sarkariresult.com.cm/jssc-para-teacher-jtaacce-2026/", source:"SarkariResult"},
+  {title:"AAI Junior Executive & Manager Online Form 2026", posts:"Various Posts", category:"PSU", state:"All India / Central", qualification:"Engineering / Professional Degree", lastDate:"2026-09-07", posted:"2026-06-01", url:"https://sarkariresult.com.cm/aai-junior-executive-manager-2026/", source:"SarkariResult"},
+  {title:"RRB Junior Engineer (JE) Online Form 2026", posts:"Various Posts", category:"Railway", state:"All India / Central", qualification:"Diploma / Engineering (Technical)", lastDate:"2026-09-13", posted:"2026-05-20", url:"https://sarkariresult.com.cm/rrb-je-2026/", source:"SarkariResult"},
+];
+
+jobs.forEach(j => {
+  j.lastDateObj = new Date(j.lastDate + "T23:59:59");
+  j.postedObj = new Date(j.posted + "T00:00:00");
+});
+
+let activeCategory = "All";
+let searchTerm = "";
+
+function daysLeftLabel(diffMs){
+  if(diffMs <= 0) return null;
+  const s = Math.floor(diffMs/1000);
+  const d = Math.floor(s/86400);
+  const h = Math.floor((s%86400)/3600);
+  const m = Math.floor((s%3600)/60);
+  const sec = s%60;
+  return {d,h,m,sec};
+}
+
+function cardHTML(j){
+  const dispDate = j.lastDateObj.toLocaleDateString('en-IN', {day:'2-digit', month:'short', year:'numeric'});
+  return `
+    <div class="card">
+      <div class="cat">${j.category} · ${j.state}</div>
+      <h3>${j.title}</h3>
+      <div class="posts">${j.posts}</div>
+      <div class="qual">${j.qualification}</div>
+      <div class="stamp-row">
+        <div class="lastdate">Last Date<b>${dispDate}</b></div>
+        <div class="countdown" data-ld="${j.lastDateObj.getTime()}">--</div>
+      </div>
+      <span class="source">via ${j.source}</span>
+      <a class="applybtn" href="${j.url}" target="_blank" rel="noopener">Apply / View →</a>
+    </div>`;
+}
+
+function renderGrid(elId, list, emptyMsg){
+  const el = document.getElementById(elId);
+  if(list.length === 0){
+    el.innerHTML = `<div class="empty">${emptyMsg}</div>`;
+    return;
+  }
+  el.innerHTML = list.map(cardHTML).join("");
+}
+
+function renderAll(){
+  const now = new Date();
+  const active = jobs.filter(j => j.lastDateObj.getTime() > now.getTime()).sort((a,b) => a.lastDateObj - b.lastDateObj);
+
+  // Section 1: latest (posted within last 30 days)
+  const thirtyDaysAgo = new Date(TODAY.getTime() - 30*86400000);
+  // active is already sorted soonest-expiry-first — just filter, don't re-sort,
+  // so "latest" section also shows the nearest deadline at the top.
+  const latest = active.filter(j => j.postedObj.getTime() >= thirtyDaysAgo.getTime());
+  renderGrid('grid-latest', latest, 'Is waqt pichle 1 mahine ki koi naye notified job active nahi hai.');
+  document.getElementById('cnt-latest').textContent = latest.length;
+
+  // Section 2: MP state
+  const mp = active.filter(j => j.state === "Madhya Pradesh");
+  renderGrid('grid-mp', mp, 'Abhi MP state ki koi live listing nahi mili — dobara search karwane ke liye chat me bol dena.');
+  document.getElementById('cnt-mp').textContent = mp.length;
+
+  // Section 3: general graduate
+  const grad = active.filter(j => j.qualification === "Graduate (Any Stream)");
+  renderGrid('grid-grad', grad, 'Abhi general graduation wali koi live listing nahi mili.');
+  document.getElementById('cnt-grad').textContent = grad.length;
+
+  // Section 4: all, with filters
+  const term = searchTerm.trim().toLowerCase();
+  const filtered = active.filter(j => {
+    const catOk = activeCategory === "All" || j.category === activeCategory;
+    const searchOk = !term || j.title.toLowerCase().includes(term) || j.category.toLowerCase().includes(term) || j.state.toLowerCase().includes(term);
+    return catOk && searchOk;
+  });
+  renderGrid('grid-all', filtered, 'Koi matching job nahi mili — filter badal kar dekhein.');
+  document.getElementById('cnt-all').textContent = `${active.length} active`;
+}
+
+function tick(){
+  const now = new Date();
+  let anyExpired = false;
+  document.querySelectorAll('.countdown').forEach(el => {
+    const ld = parseInt(el.getAttribute('data-ld'), 10);
+    const diff = ld - now.getTime();
+    const t = daysLeftLabel(diff);
+    if(!t){
+      anyExpired = true;
+      return;
+    }
+    el.textContent = `${t.d}d ${String(t.h).padStart(2,'0')}h ${String(t.m).padStart(2,'0')}m ${String(t.sec).padStart(2,'0')}s`;
+    el.classList.toggle('urgent', t.d < 2);
+  });
+  if(anyExpired) renderAll();
+}
+
+function buildChips(){
+  const cats = ["All", ...new Set(jobs.map(j => j.category))];
+  const row = document.getElementById('chipRow');
+  row.innerHTML = "";
+  cats.forEach(c => {
+    const btn = document.createElement('button');
+    btn.className = 'chip' + (c === activeCategory ? ' active' : '');
+    btn.textContent = c;
+    btn.onclick = () => {
+      activeCategory = c;
+      document.querySelectorAll('.chip').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderAll();
+      tick();
+    };
+    row.appendChild(btn);
+  });
+}
+
+document.getElementById('search').addEventListener('input', (e) => {
+  searchTerm = e.target.value;
+  renderAll();
+  tick();
+});
+
+buildChips();
+renderAll();
+tick();
+setInterval(tick, 1000);
+</script>
+
+</body>
+</html>
